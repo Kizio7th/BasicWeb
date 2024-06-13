@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,6 +94,7 @@ public class OrderServiceImpl implements OrderService {
 		String cart = "";
 		List<Order> orders = orderRepository.findByOrderer(userRepository.findById(userId).orElse(null));
 		Float totalPrice = (float) 0;
+		List<Order> managedOrders = new ArrayList<>();
 		for (Order order : orders) {
 			Book book = order.getBook();
 			book.setSold(book.getSold() + order.getQuantity());
@@ -101,6 +103,10 @@ public class OrderServiceImpl implements OrderService {
 			bookRepository.save(book);
 			orderRepository.delete(order);
 			totalPrice += order.getTotalPrice();
+			Order managedOrder = orderRepository.findById(order.getId()).orElse(null);
+			if (managedOrder != null) {
+				managedOrders.add(managedOrder);
+			}
 		}
 		paid.setCart(cart);
 		paid.setTotalPrice(totalPrice);
@@ -112,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
 		Bill bill = new Bill();
 		bill.setUser(user);
 		bill.setTotalPrice(totalPrice);
-		bill.setOrders(orders);
+		bill.setOrders(managedOrders);
 		bill.setTime(currentTime.format(formatter));
 		billRepository.save(bill);
 	}
