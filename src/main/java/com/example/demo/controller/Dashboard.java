@@ -1,5 +1,11 @@
 package com.example.demo.controller;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +37,17 @@ public class Dashboard {
     @GetMapping("/dashboard")
     public DashBoardDto dashboard() {
         try {
+            LocalDateTime now = LocalDateTime.now();
+            int currentMonth = now.getMonthValue();
+            int currentYear = now.getYear();
             DashBoardDto dashBoardDto = new DashBoardDto();
-            Long bookCount = (long) 0;
-            Float totalRevenue = (float) 0;
-            Long totalBought = (long) 0;
-            dashBoardDto.setUserCount(userRepository.count() - 1);
+            Long totalBooksInStock = (long) 0;
+            // Float totalRevenue = (float) 0;
+            Long totalBooksSoldInMonth = (long) 0;
+            Long views = (long) 0;
+            Long totalTheBookSoldInMonth = (long) 0;
+            Long totalTransactionInMonth = (long) 0;
+            Float totalRevenueInMonth = (float) 0;
             List<BookDto> bookDtos = new ArrayList<>();
             for (Book book : bookRepository.findAll()) {
                 BookDto bookDto = new BookDto();
@@ -43,23 +55,47 @@ public class Dashboard {
                 bookDto.setSold(book.getSold());
                 bookDto.setPrice(book.getPrice());
                 bookDtos.add(bookDto);
-                bookCount += book.getInStock();
+                totalBooksInStock += book.getInStock();
+                views += book.getView();
             }
-            dashBoardDto.setBooks(null);
             List<Bill> bills = billRepository.findAll();
             for (Bill bill : bills) {
-                totalRevenue += bill.getTotalPrice();
-                for (Order order : bill.getOrders()) {
-                    totalBought += order.getQuantity();
+                LocalDateTime billDateTime = LocalDateTime.ofInstant(bill.getTime().toInstant(),
+                        ZoneId.systemDefault());
+                int billMonth = billDateTime.getMonthValue();
+                int billYear = billDateTime.getYear();
+                if (billMonth == currentMonth && billYear == currentYear) {
+                    totalTransactionInMonth += 1;
+                    totalRevenueInMonth += bill.getTotalPrice();
+                    for (Order order : bill.getOrders()) {
+                        totalBooksSoldInMonth += order.getQuantity();
+                        totalTheBookSoldInMonth += 1;
+                    }
                 }
+                
+
             }
+            ////// 4 first row card
+            dashBoardDto.setTotalUser(userRepository.count() - 1);
+            dashBoardDto.setTotalBooksInStock(totalBooksInStock);
+            dashBoardDto.setTotalBooksSoldInMonth(totalBooksSoldInMonth);
 
-            dashBoardDto.setPaidCount((long) bills.size());
-            dashBoardDto.setBookCount(bookCount);
 
-            dashBoardDto.setBoughtCount(totalBought);
-            dashBoardDto.setTotalRevenue(totalRevenue);
-            dashBoardDto.setBills(bills);
+            ////// Transaction Gauge
+            dashBoardDto.setTotalTransactionInMonth(totalTransactionInMonth);
+            dashBoardDto.setTotalTransactionKPI((long) 100);
+
+            ////// Revenue Gauge
+            dashBoardDto.setTotalRevenueInMonth(totalRevenueInMonth);
+            dashBoardDto.setTotalRevenueKPI((float) 10000);
+
+            ////// Transfer Gauge
+            dashBoardDto.setView(views);
+            dashBoardDto.setTotalTheBookSoldInMonth(totalTheBookSoldInMonth);
+
+
+
+            // dashBoardDto.setBills(null);
             return dashBoardDto;
         } catch (Exception e) {
             System.out.println(e);

@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,9 +34,9 @@ public class Bill {
 
 	@Column(name = "totalPrice")
 	private Float totalPrice;
-
+	
 	@Column(name = "time")
-	private String time;
+	private Date time;
 
 	@OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
 	private List<Order> orders = new ArrayList<>();

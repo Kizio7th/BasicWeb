@@ -14,11 +14,16 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DashBoardDto {
-    private Long userCount;
-    private Long bookCount;
-    private Long boughtCount;
-    private Long paidCount;
-    private Float totalRevenue;
-    private List<BookDto> books;
+    private Long totalUser;
+    private Long totalBooksInStock;
+    private Long totalBooksSoldInMonth;
     private List<Bill> bills;
+    private Long View;
+    private Long totalTheBookSoldInMonth;
+    private Float totalRevenueInMonth;
+    private Float totalRevenueKPI;
+    private Long totalTransactionInMonth;
+    private Long totalTransactionKPI;
+    
+    // private Long 
 }

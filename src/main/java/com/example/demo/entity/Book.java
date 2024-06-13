@@ -69,4 +69,7 @@ public class Book {
 
 	@Column(name = "inStock")
 	private Long inStock = (long) 1000;
+
+	@Column(name = "view")
+	private Long view = (long) 1;
 }

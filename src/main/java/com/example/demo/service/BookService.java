@@ -20,4 +20,5 @@ public interface BookService {
 	String handleMultipartFile(MultipartFile image);
 	String handleByte(byte[] image);
 	void orderBook(BookDto bookDto, Long quantiy, User user);
+	void increaseView(Long id);
 }

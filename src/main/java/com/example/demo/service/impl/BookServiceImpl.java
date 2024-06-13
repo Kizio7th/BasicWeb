@@ -16,20 +16,15 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.BookService;
 import com.example.demo.util.ImageUtil;
 
+import lombok.AllArgsConstructor;
+
 
 @Service
+@AllArgsConstructor
 public class BookServiceImpl implements BookService{
 	
 	private BookRepository bookRepository;
 	private UserRepository userRepository;
-	
-	
-
-	public BookServiceImpl(BookRepository bookRepository, UserRepository userRepository) {
-		super();
-		this.bookRepository = bookRepository;
-		this.userRepository = userRepository;
-	}
 
 	@Override
 	public void saveBook(BookDto bookDto, MultipartFile bookImage, User user) {
@@ -142,6 +137,13 @@ public class BookServiceImpl implements BookService{
 		Book book = bookRepository.findById(id).orElse(null);
 		bookRepository.deleteById(book.getId());
 		
+	}
+
+	@Override
+	public void increaseView(Long id) {
+		Book book = bookRepository.findById(id).orElse(null);
+		book.setView(book.getView() + 1);
+		bookRepository.save(book);
 	}
 
 	

@@ -1,8 +1,8 @@
 package com.example.demo.service.impl;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,15 +93,14 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public void paid(Long userId) {
-		LocalDateTime currentTime = LocalDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
+		
 		User user = userRepository.findById(userId).orElse(null);
 		List<Order> orders = orderRepository.findByOrdererAndStatus(userRepository.findById(userId).orElse(null),
 				false);
 		Float totalPrice = (float) 0;
 		Bill bill = new Bill();
 		bill.setUser(user);
-		bill.setTime(currentTime.format(formatter));
+		bill.setTime(new Date());
 		bill = billRepository.save(bill);
 		for (Order order : orders) {
 			Book book = order.getBook();
@@ -119,6 +118,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public List<Paid> BillToPair(List<Bill> bills) {
+		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm - dd/MM/yyyy");
 		List<Paid> paids = new ArrayList<>();
 		for (Bill bill : bills) {
 			Paid paid = new Paid();
@@ -132,7 +132,7 @@ public class OrderServiceImpl implements OrderService {
 			}
 			paid.setCart(cart);
 			paid.setTotalPrice(bill.getTotalPrice());
-			paid.setTime(bill.getTime());
+			paid.setTime(formatter.format(bill.getTime()));
 			paids.add(paid);
 		}
 		return paids;
