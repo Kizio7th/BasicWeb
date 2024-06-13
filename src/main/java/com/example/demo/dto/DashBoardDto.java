@@ -24,6 +24,7 @@ public class DashBoardDto {
     private Float totalRevenueKPI;
     private Long totalTransactionInMonth;
     private Long totalTransactionKPI;
+    private Float revenueGrowthRate;
     
     // private Long 
 }

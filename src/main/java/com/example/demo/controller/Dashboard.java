@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,8 @@ public class Dashboard {
             LocalDateTime now = LocalDateTime.now();
             int currentMonth = now.getMonthValue();
             int currentYear = now.getYear();
+            int previousMonth = currentMonth == 1 ? 12 : currentMonth - 1;
+            int previousYear = currentMonth == 1 ? currentYear - 1 : currentYear;
             DashBoardDto dashBoardDto = new DashBoardDto();
             Long totalBooksInStock = (long) 0;
             // Float totalRevenue = (float) 0;
@@ -48,6 +51,7 @@ public class Dashboard {
             Long totalTheBookSoldInMonth = (long) 0;
             Long totalTransactionInMonth = (long) 0;
             Float totalRevenueInMonth = (float) 0;
+            Float totalRevenueInPreMonth = (float) 0;
             List<BookDto> bookDtos = new ArrayList<>();
             for (Book book : bookRepository.findAll()) {
                 BookDto bookDto = new BookDto();
@@ -72,14 +76,16 @@ public class Dashboard {
                         totalTheBookSoldInMonth += 1;
                     }
                 }
-                
+                if (billMonth == previousMonth && billYear == previousYear) {
+                    totalRevenueInPreMonth += bill.getTotalPrice();
+                }
 
             }
             ////// 4 first row card
             dashBoardDto.setTotalUser(userRepository.count() - 1);
             dashBoardDto.setTotalBooksInStock(totalBooksInStock);
             dashBoardDto.setTotalBooksSoldInMonth(totalBooksSoldInMonth);
-
+            dashBoardDto.setRevenueGrowthRate((totalRevenueInMonth - totalRevenueInPreMonth) / totalRevenueInPreMonth * 100);
 
             ////// Transaction Gauge
             dashBoardDto.setTotalTransactionInMonth(totalTransactionInMonth);
@@ -92,8 +98,6 @@ public class Dashboard {
             ////// Transfer Gauge
             dashBoardDto.setView(views);
             dashBoardDto.setTotalTheBookSoldInMonth(totalTheBookSoldInMonth);
-
-
 
             // dashBoardDto.setBills(null);
             return dashBoardDto;
