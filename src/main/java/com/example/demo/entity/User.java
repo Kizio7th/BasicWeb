@@ -1,6 +1,9 @@
 package com.example.demo.entity;
 
 import java.util.*;
+
+import org.springframework.data.annotation.CreatedDate;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,6 +40,10 @@ public class User {
 
     @Column(name = "password")
     private String password;
+
+    @CreatedDate
+    @Column(name = "createdDate")
+    private Date createdDate;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Book> books = new ArrayList<>();

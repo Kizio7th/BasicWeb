@@ -10,25 +10,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.BookDto;
 import com.example.demo.dto.DashBoardDto;
+import com.example.demo.entity.Bill;
 import com.example.demo.entity.Book;
 import com.example.demo.entity.Paid;
+import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.PaidRepository;
 import com.example.demo.repository.UserRepository;
 
+import lombok.AllArgsConstructor;
+
 @RestController
 @CrossOrigin(origins = "*")
+@AllArgsConstructor
 public class Dashboard {
     private UserRepository userRepository;
     private BookRepository bookRepository;
     private PaidRepository paidRepository;
-
-    public Dashboard(UserRepository userRepository, BookRepository bookRepository, PaidRepository paidRepository) {
-        super();
-        this.userRepository = userRepository;
-        this.bookRepository = bookRepository;
-        this.paidRepository = paidRepository;
-    }
+    private BillRepository billRepository;
 
     @GetMapping("/dashboard")
     public DashBoardDto dashboard() {
@@ -46,8 +45,9 @@ public class Dashboard {
                 bookCount += book.getInStock();
 
             }
-            dashBoardDto.setBooks(bookDtos);
+            dashBoardDto.setBooks(null);
             List<Paid> paids = paidRepository.findAll();
+            List<Bill> bills = billRepository.findAll();
             Float totalRevenue = (float) 0;
             Long totalBought = (long) 0;
             for (Paid paid : paids) {
@@ -59,10 +59,12 @@ public class Dashboard {
                 }
                 totalRevenue += paid.getTotalPrice();
             }
+            dashBoardDto.setPaidCount((long) bills.size());
             dashBoardDto.setBookCount(bookCount);
             dashBoardDto.setBoughtCount(totalBought);
             dashBoardDto.setTotalRevenue(totalRevenue);
-            dashBoardDto.setPaids(paids);
+            dashBoardDto.setPaids(null);
+            dashBoardDto.setBills(bills);
             return dashBoardDto;
         } catch (Exception e) {
             System.out.println(e);

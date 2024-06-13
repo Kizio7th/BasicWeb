@@ -38,8 +38,10 @@ public class OrderServiceImpl implements OrderService {
 	public void orderBook(OrderDto orderDto) {
 		User user = userRepository.findById(orderDto.getOrdererId()).orElse(null);
 		for (Order order : user.getOrders()) {
-			if (order.getBook().getId() == (orderDto.getBookId())) {
-				order.setQuantity(orderDto.getQuantity());
+			if (order.getBook().getId() == (orderDto.getBookId()) && order.getStatus() == false) {
+				Long quantity = orderDto.getQuantity() + order.getQuantity();
+				order.setQuantity(quantity);
+				order.setTotalPrice(quantity * order.getBook().getPrice());
 				orderRepository.save(order);
 				return;
 			}
@@ -61,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public List<OrderDto> findOrdersByOrdererId(Long id) {
-		List<Order> orders = orderRepository.findByOrderer(userRepository.findById(id).orElse(null));
+		List<Order> orders = orderRepository.findByOrdererAndStatus(userRepository.findById(id).orElse(null), false);
 		return orders.stream()
 				.map((order) -> mapToOrderDto(order))
 				.collect(Collectors.toList());
@@ -88,38 +90,38 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public void paid(Long userId) {
+		LocalDateTime currentTime = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
+
 		Paid paid = new Paid();
 		User user = userRepository.findById(userId).orElse(null);
 		paid.setPurchaser(user.getId() + " - " + user.getName() + " - " + user.getEmail());
 		String cart = "";
-		List<Order> orders = orderRepository.findByOrderer(userRepository.findById(userId).orElse(null));
+		List<Order> orders = orderRepository.findByOrdererAndStatus(userRepository.findById(userId).orElse(null),
+				false);
 		Float totalPrice = (float) 0;
-		List<Order> managedOrders = new ArrayList<>();
+		Bill bill = new Bill();
+		bill.setUser(user);
+		bill.setTime(currentTime.format(formatter));
+		bill = billRepository.save(bill);
 		for (Order order : orders) {
 			Book book = order.getBook();
 			book.setSold(book.getSold() + order.getQuantity());
 			book.setInStock(book.getInStock() - order.getQuantity());
 			cart += book.getTitle() + " _ " + book.getAuthor() + " _ " + order.getQuantity() + "; ";
 			bookRepository.save(book);
-			orderRepository.delete(order);
+			order.setStatus(true);
+			order.setBill(bill);
+			orderRepository.save(order);
 			totalPrice += order.getTotalPrice();
-			Order managedOrder = orderRepository.findById(order.getId()).orElse(null);
-			if (managedOrder != null) {
-				managedOrders.add(managedOrder);
-			}
 		}
+		bill.setTotalPrice(totalPrice);
+		billRepository.save(bill);
 		paid.setCart(cart);
 		paid.setTotalPrice(totalPrice);
-		LocalDateTime currentTime = LocalDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
+
 		paid.setTime(currentTime.format(formatter));
 		paidRepository.save(paid);
 
-		Bill bill = new Bill();
-		bill.setUser(user);
-		bill.setTotalPrice(totalPrice);
-		bill.setOrders(managedOrders);
-		bill.setTime(currentTime.format(formatter));
-		billRepository.save(bill);
 	}
 }

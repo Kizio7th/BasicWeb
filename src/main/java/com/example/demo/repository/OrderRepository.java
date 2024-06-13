@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.User;
 
+
 public interface OrderRepository extends JpaRepository<Order, Long>{
-	List<Order> findByOrderer(User user);
+	List<Order> findByOrdererAndStatus(User user, Boolean status);
 	void deleteByOrderer(User orderer);
 }

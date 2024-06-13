@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter 
+@Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,10 +28,12 @@ public class Order {
 
 	@ManyToOne
 	@JoinColumn(name = "orderer")
+	@JsonIgnore
 	private User orderer;
 
 	@ManyToOne
 	@JoinColumn(name = "book")
+	@JsonIgnore
 	private Book book;
 
 	@Column(name = "quantity")
@@ -40,5 +44,9 @@ public class Order {
 
 	@ManyToOne
 	@JoinColumn(name = "bill")
+	@JsonIgnore
 	private Bill bill;
+
+	@Column(name = "status")
+	private Boolean status = false;
 }

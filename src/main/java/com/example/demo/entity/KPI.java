@@ -25,23 +25,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "bill")
-public class Bill {
+@Table(name = "kpi")
+public class KPI {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "totalPrice")
-	private Float totalPrice;
+	@Column(name = "revenue")
+	private Float revenue;
 
-	@Column(name = "time")
-	private String time;
-
-	@OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
-	private List<Order> orders = new ArrayList<>();
-
-	@ManyToOne
-	@JoinColumn(name = "user")
-	@JsonIgnore
-	private User user;
+	@Column(name = "bought")
+	private Long bought;
 }
