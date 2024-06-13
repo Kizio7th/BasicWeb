@@ -79,6 +79,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public OrderDto mapToOrderDto(Order order) {
+		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm - dd/MM/yyyy");
 		OrderDto orderDto = new OrderDto();
 		orderDto.setId(order.getId());
 		orderDto.setBookId(order.getBook().getId());
@@ -88,6 +89,7 @@ public class OrderServiceImpl implements OrderService {
 		orderDto.setQuantity(order.getQuantity());
 		orderDto.setTotalPrice(order.getTotalPrice());
 		orderDto.setImage(ImageUtil.decompressImage(order.getBook().getCover()));
+		orderDto.setTime(formatter.format(order.getBill().getTime()));
 		return orderDto;
 	}
 

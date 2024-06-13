@@ -18,4 +18,5 @@ public class OrderDto {
 	private Long quantity;
 	private String image;
 	private Float totalPrice;
+	private String time;
 }
