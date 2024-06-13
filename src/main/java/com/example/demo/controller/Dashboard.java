@@ -11,6 +11,7 @@ import com.example.demo.dto.BookDto;
 import com.example.demo.dto.DashBoardDto;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.Book;
+import com.example.demo.entity.Order;
 import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.ReviewRepository;
@@ -32,6 +33,8 @@ public class Dashboard {
         try {
             DashBoardDto dashBoardDto = new DashBoardDto();
             Long bookCount = (long) 0;
+            Float totalRevenue = (float) 0;
+            Long totalBought = (long) 0;
             dashBoardDto.setUserCount(userRepository.count() - 1);
             List<BookDto> bookDtos = new ArrayList<>();
             for (Book book : bookRepository.findAll()) {
@@ -44,8 +47,13 @@ public class Dashboard {
             }
             dashBoardDto.setBooks(null);
             List<Bill> bills = billRepository.findAll();
-            Float totalRevenue = (float) 0;
-            Long totalBought = (long) 0;
+            for (Bill bill : bills) {
+                totalRevenue += bill.getTotalPrice();
+                for (Order order : bill.getOrders()) {
+                    totalBought += order.getQuantity();
+                }
+            }
+
             dashBoardDto.setPaidCount((long) bills.size());
             dashBoardDto.setBookCount(bookCount);
 
