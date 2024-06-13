@@ -21,6 +21,7 @@ import com.example.demo.entity.Book;
 import com.example.demo.entity.Order;
 import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.BookRepository;
+import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.ReviewRepository;
 import com.example.demo.repository.UserRepository;
 
@@ -34,6 +35,7 @@ public class Dashboard {
     private BookRepository bookRepository;
     private BillRepository billRepository;
     private ReviewRepository reviewRepository;
+    private OrderRepository orderRepository;
 
     @GetMapping("/dashboard")
     public DashBoardDto dashboard() {
@@ -81,6 +83,11 @@ public class Dashboard {
                 }
 
             }
+            List<Order> newestOrders = orderRepository.findTop3NewestOrder();
+            for (Order order : newestOrders) {
+                Book book = bookRepository.findById(order.getBook().getId()).orElse(null);
+                order.setBook(book);
+            }
             ////// 4 first row card
             dashBoardDto.setTotalUser(userRepository.count() - 1);
             dashBoardDto.setTotalBooksInStock(totalBooksInStock);
@@ -99,6 +106,8 @@ public class Dashboard {
             dashBoardDto.setView(views);
             dashBoardDto.setTotalTheBookSoldInMonth(totalTheBookSoldInMonth);
 
+
+            dashBoardDto.setNewestOrders(newestOrders);
             // dashBoardDto.setBills(null);
             return dashBoardDto;
         } catch (Exception e) {
