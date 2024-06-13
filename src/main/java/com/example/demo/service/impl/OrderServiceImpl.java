@@ -9,15 +9,14 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.OrderDto;
+import com.example.demo.dto.Paid;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.Book;
 import com.example.demo.entity.Order;
-import com.example.demo.entity.Paid;
 import com.example.demo.entity.User;
 import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.OrderRepository;
-import com.example.demo.repository.PaidRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.OrderService;
 import com.example.demo.util.ImageUtil;
@@ -31,7 +30,6 @@ public class OrderServiceImpl implements OrderService {
 	private BookRepository bookRepository;
 	private UserRepository userRepository;
 	private OrderRepository orderRepository;
-	private PaidRepository paidRepository;
 	private BillRepository billRepository;
 
 	@Override
@@ -59,6 +57,11 @@ public class OrderServiceImpl implements OrderService {
 	public void deleteOrder(Long id) {
 		Order order = orderRepository.findById(id).orElse(null);
 		orderRepository.delete(order);
+	}
+
+	@Override
+	public Long countOrder() {
+		return orderRepository.countByStatus(false);
 	}
 
 	@Override
@@ -92,11 +95,7 @@ public class OrderServiceImpl implements OrderService {
 	public void paid(Long userId) {
 		LocalDateTime currentTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
-
-		Paid paid = new Paid();
 		User user = userRepository.findById(userId).orElse(null);
-		paid.setPurchaser(user.getId() + " - " + user.getName() + " - " + user.getEmail());
-		String cart = "";
 		List<Order> orders = orderRepository.findByOrdererAndStatus(userRepository.findById(userId).orElse(null),
 				false);
 		Float totalPrice = (float) 0;
@@ -108,7 +107,6 @@ public class OrderServiceImpl implements OrderService {
 			Book book = order.getBook();
 			book.setSold(book.getSold() + order.getQuantity());
 			book.setInStock(book.getInStock() - order.getQuantity());
-			cart += book.getTitle() + " _ " + book.getAuthor() + " _ " + order.getQuantity() + "; ";
 			bookRepository.save(book);
 			order.setStatus(true);
 			order.setBill(bill);
@@ -117,11 +115,26 @@ public class OrderServiceImpl implements OrderService {
 		}
 		bill.setTotalPrice(totalPrice);
 		billRepository.save(bill);
-		paid.setCart(cart);
-		paid.setTotalPrice(totalPrice);
+	}
 
-		paid.setTime(currentTime.format(formatter));
-		paidRepository.save(paid);
-
+	@Override
+	public List<Paid> BillToPair(List<Bill> bills) {
+		List<Paid> paids = new ArrayList<>();
+		for (Bill bill : bills) {
+			Paid paid = new Paid();
+			paid.setPurchaser(
+					bill.getUser().getId() + " - " + bill.getUser().getName() + " - " + bill.getUser().getEmail());
+			String cart = "";
+			List<Order> orders = orderRepository.findByBill(bill);
+			for (Order order : orders) {
+				Book book = order.getBook();
+				cart += book.getTitle() + " _ " + book.getAuthor() + " _ " + order.getQuantity() + "; ";
+			}
+			paid.setCart(cart);
+			paid.setTotalPrice(bill.getTotalPrice());
+			paid.setTime(bill.getTime());
+			paids.add(paid);
+		}
+		return paids;
 	}
 }

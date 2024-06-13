@@ -10,4 +10,5 @@ import com.example.demo.entity.Book;
 
 public interface ReviewRepository extends JpaRepository<Review, Long>{
 	List<Review> findByBook(Book book);
+	long countByBook(Book book);
 }

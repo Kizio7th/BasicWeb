@@ -11,5 +11,5 @@ public interface ReviewService {
 	void deleteReviewById(Long id);
 	List<ReviewDto> findReviewsByBook(Long id);
 	ReviewDto mapToReviewDto(Review review);
-	
+	Long countReviewByBook(Long id);
 }

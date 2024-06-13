@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.ReviewDto;
@@ -69,6 +70,11 @@ public class ReviewServiceImpl implements ReviewService {
 		reviewDto.setRating(review.getRating());
 		reviewDto.setComment(review.getComment());
 		return reviewDto;
+	}
+
+	@Override
+	public Long countReviewByBook(Long id) {
+		return reviewRepository.countByBook(bookRepository.findById(id).orElse(null));
 	}
 	
 }

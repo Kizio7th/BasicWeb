@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,10 +11,9 @@ import com.example.demo.dto.BookDto;
 import com.example.demo.dto.DashBoardDto;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.Book;
-import com.example.demo.entity.Paid;
 import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.BookRepository;
-import com.example.demo.repository.PaidRepository;
+import com.example.demo.repository.ReviewRepository;
 import com.example.demo.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -26,8 +24,8 @@ import lombok.AllArgsConstructor;
 public class Dashboard {
     private UserRepository userRepository;
     private BookRepository bookRepository;
-    private PaidRepository paidRepository;
     private BillRepository billRepository;
+    private ReviewRepository reviewRepository;
 
     @GetMapping("/dashboard")
     public DashBoardDto dashboard() {
@@ -43,27 +41,16 @@ public class Dashboard {
                 bookDto.setPrice(book.getPrice());
                 bookDtos.add(bookDto);
                 bookCount += book.getInStock();
-
             }
             dashBoardDto.setBooks(null);
-            List<Paid> paids = paidRepository.findAll();
             List<Bill> bills = billRepository.findAll();
             Float totalRevenue = (float) 0;
             Long totalBought = (long) 0;
-            for (Paid paid : paids) {
-                String cart = paid.getCart();
-                String[] orders = cart.split("; ");
-                for (String order : orders) {
-                    Long quantity = Long.parseLong(order.split(" _ ")[2]);
-                    totalBought += quantity;
-                }
-                totalRevenue += paid.getTotalPrice();
-            }
             dashBoardDto.setPaidCount((long) bills.size());
             dashBoardDto.setBookCount(bookCount);
+
             dashBoardDto.setBoughtCount(totalBought);
             dashBoardDto.setTotalRevenue(totalRevenue);
-            dashBoardDto.setPaids(null);
             dashBoardDto.setBills(bills);
             return dashBoardDto;
         } catch (Exception e) {

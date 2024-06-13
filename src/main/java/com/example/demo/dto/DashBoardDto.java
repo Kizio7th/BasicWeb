@@ -3,7 +3,6 @@ package com.example.demo.dto;
 import java.util.List;
 
 import com.example.demo.entity.Bill;
-import com.example.demo.entity.Paid;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +19,6 @@ public class DashBoardDto {
     private Long boughtCount;
     private Long paidCount;
     private Float totalRevenue;
-    private List<Paid> paids;
     private List<BookDto> books;
     private List<Bill> bills;
 }

@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.getEmail());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        
+        user.setCreatedDate(new Date());
         List<Role> roles = new ArrayList<>();
         for(String roleName : Arrays.asList("ROLE_USER")) {
             Role role = roleRepository.findByName(roleName);
