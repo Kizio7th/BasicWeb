@@ -34,7 +34,7 @@ public class Dashboard {
     public DashBoardDto dashboard() {
         try {
             DashBoardDto dashBoardDto = new DashBoardDto();
-            dashBoardDto.setBookCount(bookRepository.count());
+            Long bookCount = (long) 0;
             dashBoardDto.setUserCount(userRepository.count() - 1);
             List<BookDto> bookDtos = new ArrayList<>();
             for (Book book : bookRepository.findAll()) {
@@ -43,6 +43,8 @@ public class Dashboard {
                 bookDto.setSold(book.getSold());
                 bookDto.setPrice(book.getPrice());
                 bookDtos.add(bookDto);
+                bookCount += book.getInStock();
+
             }
             dashBoardDto.setBooks(bookDtos);
             List<Paid> paids = paidRepository.findAll();
@@ -57,6 +59,7 @@ public class Dashboard {
                 }
                 totalRevenue += paid.getTotalPrice();
             }
+            dashBoardDto.setBookCount(bookCount);
             dashBoardDto.setBoughtCount(totalBought);
             dashBoardDto.setTotalRevenue(totalRevenue);
             dashBoardDto.setPaids(paids);
