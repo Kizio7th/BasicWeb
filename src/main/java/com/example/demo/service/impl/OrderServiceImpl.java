@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public void paid(Long userId) {
-		
+
 		User user = userRepository.findById(userId).orElse(null);
 		List<Order> orders = orderRepository.findByOrdererAndStatus(userRepository.findById(userId).orElse(null),
 				false);
@@ -138,4 +138,15 @@ public class OrderServiceImpl implements OrderService {
 		return paids;
 	}
 
+	@Override
+	public List<OrderDto> getTop3NewestOrder() {
+		List<Order> orders = orderRepository.findTop3NewestOrder();
+		List<OrderDto> orderDtos = orders.stream()
+				.map(this::mapToOrderDto)
+				.collect(Collectors.toList());
+
+		orderDtos.forEach(orderDto -> orderDto.setImage(null));
+
+		return orderDtos;
+	}
 }

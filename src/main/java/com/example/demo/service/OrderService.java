@@ -17,4 +17,5 @@ public interface OrderService {
 	void paid (Long userId);
 	Long countOrder();
 	List<Paid> BillToPair(List<Bill> bills);
+	List<OrderDto> getTop3NewestOrder();
 }

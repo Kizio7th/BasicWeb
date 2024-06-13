@@ -24,6 +24,7 @@ import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.ReviewRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.OrderService;
 
 import lombok.AllArgsConstructor;
 
@@ -36,6 +37,7 @@ public class Dashboard {
     private BillRepository billRepository;
     private ReviewRepository reviewRepository;
     private OrderRepository orderRepository;
+    private OrderService orderService;
 
     @GetMapping("/dashboard")
     public DashBoardDto dashboard() {
@@ -83,16 +85,12 @@ public class Dashboard {
                 }
 
             }
-            List<Order> newestOrders = orderRepository.findTop3NewestOrder();
-            for (Order order : newestOrders) {
-                Book book = bookRepository.findById(order.getBook().getId()).orElse(null);
-                order.setBook(book);
-            }
             ////// 4 first row card
             dashBoardDto.setTotalUser(userRepository.count() - 1);
             dashBoardDto.setTotalBooksInStock(totalBooksInStock);
             dashBoardDto.setTotalBooksSoldInMonth(totalBooksSoldInMonth);
-            dashBoardDto.setRevenueGrowthRate((totalRevenueInMonth - totalRevenueInPreMonth) / totalRevenueInPreMonth * 100);
+            dashBoardDto.setRevenueGrowthRate(
+                    (totalRevenueInMonth - totalRevenueInPreMonth) / totalRevenueInPreMonth * 100);
 
             ////// Transaction Gauge
             dashBoardDto.setTotalTransactionInMonth(totalTransactionInMonth);
@@ -106,8 +104,7 @@ public class Dashboard {
             dashBoardDto.setView(views);
             dashBoardDto.setTotalTheBookSoldInMonth(totalTheBookSoldInMonth);
 
-
-            dashBoardDto.setNewestOrders(newestOrders);
+            dashBoardDto.setNewestOrders(orderService.getTop3NewestOrder());
             // dashBoardDto.setBills(null);
             return dashBoardDto;
         } catch (Exception e) {
