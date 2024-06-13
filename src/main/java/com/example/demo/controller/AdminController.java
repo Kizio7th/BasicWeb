@@ -17,23 +17,21 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.dto.BookDto;
 import com.example.demo.entity.Paid;
 import com.example.demo.entity.User;
+import com.example.demo.service.BillService;
 import com.example.demo.service.BookService;
 import com.example.demo.service.PaidService;
 import com.example.demo.service.UserService;
 
+import lombok.AllArgsConstructor;
+
 @Controller
+@AllArgsConstructor
 public class AdminController {
 	private UserService userService;
 	private BookService bookService;
 	private PaidService paidService;
-	
-    
-    public AdminController(UserService userService, BookService bookService, PaidService paidService) {
-		super();
-		this.userService = userService;
-		this.bookService = bookService;
-		this.paidService = paidService;
-	}
+	private BillService billService; 
+     
 	@ModelAttribute("currentUser")
     public User currentUser(Authentication auth) {
     	if (auth == null) {

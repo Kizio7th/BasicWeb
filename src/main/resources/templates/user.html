@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, height=auto, initial-scale=1.0" />
-  <title>Thư viện sách</title>
+  <title>BookStore</title>
   <link rel="shortcut icon" th:href="@{/assets/images/web-icon.png}" type="image/x-icon">
   <link rel="stylesheet" th:href="@{/assets/css/builder.css}" />
   <link rel="stylesheet" th:href="@{/assets/themify-icons/themify-icons.css}" />
@@ -22,6 +22,7 @@
       <li><a sec:authorize="!isAuthenticated()" th:href="@{/login}">Đăng nhập</a></li>
       <li><a th:if="${currentUser.id == 1}" th:href="@{/admin/books}">Quản lý sách</a></li>
       <li><a th:if="${currentUser.id == 1}" th:href="@{/admin/paid}">Đơn đã thanh toán</a></li>
+      <li><a th:if="${currentUser.id == 1}" th:href="@{/admin/paid}"><a href="http://localhost:3000/dashBoardChart">Dashboard</a></a></li>
       <li sec:authorize="isAuthenticated()">
         <i class="ti-user"></i>
         <ul class="sub-nav">
@@ -94,7 +95,7 @@
               <p>Mã sản phẩm: <span th:text="${order.bookId}"></span></p>
               <p>Tên sản phẩm: <br><span th:text="${order.bookName}"></span></p>
               <p>Số lượng: <span th:text="${order.quantity}"></span></p>
-              <p>Giá:...</p>
+              <p>Tổng tiền: <span th:text="${order.totalPrice}"></span></p>
               <span><img th:src="'data:image/jpeg;base64,' + ${order.image}" /></span>
             </li>
           </ul>

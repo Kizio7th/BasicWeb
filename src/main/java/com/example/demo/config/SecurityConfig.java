@@ -32,6 +32,7 @@ public class SecurityConfig {
                 		.requestMatchers("/register/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/pay").permitAll()
+                        .requestMatchers("/dashboard").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers(staticResources).permitAll()

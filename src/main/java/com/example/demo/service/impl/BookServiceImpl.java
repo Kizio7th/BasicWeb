@@ -35,6 +35,7 @@ public class BookServiceImpl implements BookService{
 	public void saveBook(BookDto bookDto, MultipartFile bookImage, User user) {
 		Book book = new Book();
 		book.setTitle(bookDto.getTitle());
+		book.setPrice(bookDto.getPrice());
 		book.setAuthor(bookDto.getAuthor());
 		book.setCategory(bookDto.getCategory());
 		book.setReleaseDate(bookDto.getReleaseDate());
@@ -51,6 +52,7 @@ public class BookServiceImpl implements BookService{
 	public void orderBook(BookDto bookDto, Long quantiy, User user) {
 		Book book = new Book();
 		book.setTitle(bookDto.getTitle());
+		book.setPrice(bookDto.getPrice());
 		book.setAuthor(bookDto.getAuthor());
 		book.setCategory(bookDto.getCategory());
 		book.setReleaseDate(bookDto.getReleaseDate());
@@ -66,6 +68,7 @@ public class BookServiceImpl implements BookService{
 		Book book = bookRepository.findById(id).orElse(null);
 		book.setTitle(bookDto.getTitle());
 		book.setAuthor(bookDto.getAuthor());
+		book.setPrice(bookDto.getPrice());
 		book.setCategory(bookDto.getCategory());
 		book.setReleaseDate(bookDto.getReleaseDate());
 		book.setPageNumber(bookDto.getPageNumber());
@@ -106,6 +109,7 @@ public class BookServiceImpl implements BookService{
 		BookDto bookDto = new BookDto();
 		bookDto.setId(book.getId());
 		bookDto.setTitle(book.getTitle());
+		bookDto.setPrice(book.getPrice());
 		bookDto.setAuthor(book.getAuthor());
 		bookDto.setCategory(book.getCategory());
 		bookDto.setReleaseDate(book.getReleaseDate());

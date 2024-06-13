@@ -8,10 +8,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.OrderDto;
+import com.example.demo.entity.Bill;
 import com.example.demo.entity.Book;
 import com.example.demo.entity.Order;
 import com.example.demo.entity.Paid;
 import com.example.demo.entity.User;
+import com.example.demo.repository.BillRepository;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaidRepository;
@@ -19,30 +21,23 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.OrderService;
 import com.example.demo.util.ImageUtil;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class OrderServiceImpl implements OrderService {
-	
+
 	private BookRepository bookRepository;
 	private UserRepository userRepository;
 	private OrderRepository orderRepository;
 	private PaidRepository paidRepository;
-	
-	
-
-	public OrderServiceImpl(BookRepository bookRepository, UserRepository userRepository,
-			OrderRepository orderRepository, PaidRepository paidRepository) {
-		super();
-		this.bookRepository = bookRepository;
-		this.userRepository = userRepository;
-		this.orderRepository = orderRepository;
-		this.paidRepository = paidRepository;
-	}
+	private BillRepository billRepository;
 
 	@Override
 	public void orderBook(OrderDto orderDto) {
 		User user = userRepository.findById(orderDto.getOrdererId()).orElse(null);
-		for(Order order : user.getOrders()) {
-			if(order.getBook().getId() == (orderDto.getBookId())) {
+		for (Order order : user.getOrders()) {
+			if (order.getBook().getId() == (orderDto.getBookId())) {
 				order.setQuantity(orderDto.getQuantity());
 				orderRepository.save(order);
 				return;
@@ -53,6 +48,7 @@ public class OrderServiceImpl implements OrderService {
 		order.setOrderer(user);
 		order.setBook(book);
 		order.setQuantity(orderDto.getQuantity());
+		order.setTotalPrice(book.getPrice() * orderDto.getQuantity());
 		orderRepository.save(order);
 	}
 
@@ -74,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
 	public Order findById(Long id) {
 		return orderRepository.findById(id).orElse(null);
 	}
-	
+
 	@Override
 	public OrderDto mapToOrderDto(Order order) {
 		OrderDto orderDto = new OrderDto();
@@ -84,6 +80,7 @@ public class OrderServiceImpl implements OrderService {
 		orderDto.setOrdererId(order.getOrderer().getId());
 		orderDto.setOrdererName(order.getOrderer().getName());
 		orderDto.setQuantity(order.getQuantity());
+		orderDto.setTotalPrice(order.getTotalPrice());
 		orderDto.setImage(ImageUtil.decompressImage(order.getBook().getCover()));
 		return orderDto;
 	}
@@ -92,20 +89,31 @@ public class OrderServiceImpl implements OrderService {
 	public void paid(Long userId) {
 		Paid paid = new Paid();
 		User user = userRepository.findById(userId).orElse(null);
-		paid.setPurchaser(user.getId() + " - " + user.getName() + " - "+ user.getEmail());
+		paid.setPurchaser(user.getId() + " - " + user.getName() + " - " + user.getEmail());
 		String cart = "";
 		List<Order> orders = orderRepository.findByOrderer(userRepository.findById(userId).orElse(null));
+		Float totalPrice = (float) 0;
 		for (Order order : orders) {
 			Book book = order.getBook();
 			book.setSold(book.getSold() + order.getQuantity());
+			book.setInStock(book.getInStock() - order.getQuantity());
 			cart += book.getTitle() + " _ " + book.getAuthor() + " _ " + order.getQuantity() + "; ";
 			bookRepository.save(book);
 			orderRepository.delete(order);
-	    }
+			totalPrice += order.getTotalPrice();
+		}
 		paid.setCart(cart);
+		paid.setTotalPrice(totalPrice);
 		LocalDateTime currentTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
 		paid.setTime(currentTime.format(formatter));
 		paidRepository.save(paid);
+
+		Bill bill = new Bill();
+		bill.setUser(user);
+		bill.setTotalPrice(totalPrice);
+		bill.setOrders(orders);
+		bill.setTime(currentTime.format(formatter));
+		billRepository.save(bill);
 	}
 }

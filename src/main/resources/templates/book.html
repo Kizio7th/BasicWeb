@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, height=auto, initial-scale=1.0" />
-  <title>Thư viện sách</title>
+  <title>BookStore</title>
   <link rel="shortcut icon" th:href="@{/assets/images/web-icon.png}" type="image/x-icon">
   <link rel="stylesheet" th:href="@{/assets/css/builder.css}" />
   <link rel="stylesheet" th:href="@{/assets/themify-icons/themify-icons.css}" />
@@ -22,6 +22,7 @@
       <li><a sec:authorize="!isAuthenticated()" th:href="@{/login}">Đăng nhập</a></li>
       <li><a th:if="${currentUser.id == 1}" th:href="@{/admin/books}">Quản lý sách</a></li>
       <li><a th:if="${currentUser.id == 1}" th:href="@{/admin/paid}">Đơn đã thanh toán</a></li>
+      <li><a th:if="${currentUser.id == 1}"><a href="http://localhost:3000/dashBoardChart">Dashboard</a></a></li>
       <li sec:authorize="isAuthenticated()">
         <i class="ti-user"></i>
         <ul class="sub-nav">
@@ -55,9 +56,13 @@
           <p th:errors="*{title}" th:if="${#fields.hasErrors('title')}" class="alert alert-danger"></p>
           <p th:if="${error}" class="alert alert-danger" th:text="${error}"></p>
         </div>
-        <div class="input-box" style="width: 58%;display: inline-block">
+        <div class="input-box">
           <input id="author" name="author" type="text" th:field="*{author}" readonly>
           <label for="">Tác giả <span style="color: red;">*</span></label>
+        </div>
+        <div class="input-box" style="width: 58%;display: inline-block;">
+          <input id="price" name="price" th:field="*{price}" type="number" readonly>
+          <label for="">Giá tiền <span style="color: red;">*</span></label>
         </div>
         <div class="input-box" style="width: 40%;display: inline-block;">
           <input id="releaseDate" name="releaseDate" th:field="*{releaseDate}" type="date" readonly>
@@ -193,6 +198,8 @@
       document.getElementById('title').setAttribute('required', 'true');
       document.getElementById('author').removeAttribute('readonly');
       document.getElementById('author').setAttribute('required', 'true');
+      document.getElementById('price').removeAttribute('readonly');
+      document.getElementById('price').setAttribute('required', 'true');
       document.getElementById('releaseDate').removeAttribute('readonly');
       document.getElementById('releaseDate').setAttribute('required', 'true');
       document.getElementById('description').removeAttribute('readonly');
@@ -202,6 +209,7 @@
     }
     function disableEdit() {
       document.getElementById('title').setAttribute('readonly', 'true');
+      document.getElementById('price').setAttribute('readonly', 'true');
       document.getElementById('author').setAttribute('readonly', 'true');
       document.getElementById('releaseDate').setAttribute('readonly', 'true');
       document.getElementById('description').setAttribute('readonly', 'true');

@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, height=auto, initial-scale=1.0" />
-  <title>Thư viện sách</title>
+  <title>BookStore</title>
   <link rel="shortcut icon" th:href="@{/assets/images/web-icon.png}" type="image/x-icon">
   <link rel="stylesheet" th:href="@{/assets/css/builder.css}" />
   <link rel="stylesheet" th:href="@{/assets/themify-icons/themify-icons.css}" />
@@ -22,6 +22,7 @@
       <li><a sec:authorize="!isAuthenticated()" th:href="@{/login}">Đăng nhập</a></li>
       <li><a th:if="${currentUser.id == 1}" th:href="@{/admin/books}">Quản lý sách</a></li>
       <li><a th:if="${currentUser.id == 1}" th:href="@{/admin/paid}">Đơn đã thanh toán</a></li>
+      <li><a th:if="${currentUser.id == 1}" th:href="@{/admin/paid}"><a href="http://localhost:3000/dashBoardChart">Dashboard</a></a></li>
       <li sec:authorize="isAuthenticated()">
         <i class="ti-user"></i>
         <ul class="sub-nav">
@@ -59,7 +60,7 @@
             <td th:text="${paid.id}"></td>
             <td th:text="${paid.purchaser}"></td>
             <td th:utext="${#strings.replace(paid.cart, ';', '&lt;br/&gt;')}"></td>
-            <td>...</td>
+            <td th:text="${paid.totalPrice}"></td>
             <td th:text="${paid.time}"></td>
           </tr>
         </tbody>

@@ -64,7 +64,8 @@ public class UserController {
     }
     @GetMapping("/user/{id}")
     public String user(Model model, @PathVariable("id") Long id,Authentication auth){
-    	User currentUser = currentUser(auth);
+		try {
+			User currentUser = currentUser(auth);
     	User user = userService.findUserById(id);
     	List<OrderDto> orders = orderService.findOrdersByOrdererId(id);
     	if(currentUser.getId() == id) {
@@ -73,6 +74,10 @@ public class UserController {
     		return "user";
     	}
     	else return "redirect:/";
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+    	return "redirect:/";
     }
     @PostMapping("/user/save")
     public String updateProfile(Model model, UserDto userDto, @RequestParam(name = "id") Long id,Authentication auth) {

@@ -1,11 +1,17 @@
 package com.example.demo.entity;
 
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,23 +23,22 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "paid")
-public class Paid {
+@Table(name = "bill")
+public class Bill {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-	
-	@Column(name = "purchaser")
-	private String purchaser;
-	
-	@Column(name = "cart")
-	private String cart;
-	
+	private Long id;
+
 	@Column(name = "totalPrice")
 	private Float totalPrice;
 
 	@Column(name = "time")
 	private String time;
-	
-	
+
+	@OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
+	private List<Order> orders = new ArrayList<>();
+
+	@ManyToOne
+	@JoinColumn(name = "user")
+	private User user;
 }

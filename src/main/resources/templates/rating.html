@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, height=auto, initial-scale=1.0" />
-  <title>Thư viện sách</title>
+  <title>BookStore</title>
   <link rel="shortcut icon" th:href="@{/assets/images/web-icon.png}" type="image/x-icon">
   <link rel="stylesheet" th:href="@{/assets/css/builder.css}" />
   <link rel="stylesheet" th:href="@{/assets/themify-icons/themify-icons.css}" />
@@ -22,6 +22,7 @@
       <li><a sec:authorize="!isAuthenticated()" th:href="@{/login}">Đăng nhập</a></li>
       <li><a th:if="${currentUser.id == 1}" th:href="@{/admin/books}">Quản lý sách</a></li>
       <li><a th:if="${currentUser.id == 1}" th:href="@{/admin/paid}">Đơn đã thanh toán</a></li>
+      <li><a th:if="${currentUser.id == 1}" th:href="@{/admin/paid}"><a href="http://localhost:3000/dashBoardChart">Dashboard</a></a></li>
       <li sec:authorize="isAuthenticated()">
         <i class="ti-user"></i>
         <ul class="sub-nav">
@@ -47,6 +48,7 @@
       <li>Thể loại:<span th:text="${book.category}"></span></li>
       <li>Ngày phát hành:<span th:text="${book.releaseDate}"></span></li>
       <li>Số trang:<span th:text="${book.pageNumber}"></span></li>
+      <li>Giá tiền:<span id="book-price" th:text="${book.price}"></span></li>
       <li>Mô tả:<p th:text="${book.description}" style="overflow: auto;margin: 20px;font-weight: normal;"></p>
       </li>
       <img th:src="'data:image/jpeg;base64,' + ${book.cover}" />
@@ -54,8 +56,10 @@
         <div class="value-button" id="decrease" onclick="decreaseValue()" value="Decrease Value">-</div>
         <input type="number" id="number" name="quantity" value="0" />
         <div class="value-button" id="increase" onclick="increaseValue()" value="Increase Value">+</div>
+        <div>Thành tiền: <p class="total-price">0</p></div>
         <button type="submit"><i class="fa-solid fa-cart-shopping"></i></button>
       </form>
+
     </ul>
 
   </div>
@@ -116,18 +120,26 @@
     document.getElementById("rating").value = value;
   }
   function increaseValue() {
-    var value = parseInt(document.getElementById('number').value, 10);
-    value = isNaN(value) ? 0 : value;
-    value++;
-    document.getElementById('number').value = value;
+    var quantity = parseInt(document.getElementById('number').value, 10);
+    quantity = isNaN(quantity) ? 0 : quantity;
+    quantity++;
+    document.getElementById('number').value = quantity;
+    updateTotalPrice(quantity);
   }
-
+  
   function decreaseValue() {
-    var value = parseInt(document.getElementById('number').value, 10);
-    value = isNaN(value) ? 0 : value;
-    value < 1 ? value = 1 : '';
-    value--;
-    document.getElementById('number').value = value;
+    var quantity = parseInt(document.getElementById('number').value, 10);
+    quantity = isNaN(quantity) ? 0 : quantity;
+    quantity < 1 ? quantity = 1 : '';
+    quantity--;
+    document.getElementById('number').value = quantity;
+    updateTotalPrice(quantity);
+  }
+  
+  function updateTotalPrice(quantity) {
+    var bookPrice = parseFloat(document.getElementById('book-price').innerText);
+    var totalPrice = bookPrice * quantity;
+    document.querySelector('.total-price').innerText = totalPrice;
   }
   document.getElementById('quantity-form').addEventListener('submit', function(event) {
     var quantityValue = parseInt(document.getElementById('number').value, 10);
