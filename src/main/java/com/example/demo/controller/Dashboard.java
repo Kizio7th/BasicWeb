@@ -102,23 +102,15 @@ public class Dashboard {
             for (int i = 0; i < revenueDetail.length; i++) {
                 revenueDetailMap.put((long) i * 5, revenueDetail[i]);
             }
-            Long maxRevenue = (long) Math.round(Collections.max(Arrays.asList(revenueDetail)));
-            int originalDigits = String.valueOf(maxRevenue).length();
-            Long roundedUp = (long) Math.pow(10, originalDigits);
+            String maxRevenue = String.valueOf(Math.round(Collections.max(Arrays.asList(revenueDetail))));
+
+            Long firstNum = Long.parseLong(maxRevenue.substring(0, 1));
+            firstNum += 1;
+            maxRevenue = firstNum.toString() + maxRevenue.substring(1);
             Map<Long, Long> revenuesConfig = new HashMap<>();
             for (int i = 0; i < 6; i++) {
-                revenuesConfig.put((long) i * 20, roundedUp / 5 * i);
+                revenuesConfig.put((long) i * 20, Long.parseLong(maxRevenue) / 5 * i);
             }
-            // {
-            // {
-            // put(0L, 0L);
-            // put(20L, 2000L);
-            // put(40L, 4000L);
-            // put(60L, 6000L);
-            // put(80L, 8000L);
-            // put(100L, 10000L);
-            // }
-            // }
             ////// 4 first row card
             dashBoardDto.setTotalUser(userRepository.count() - 1);
             dashBoardDto.setTotalBooksInStock(totalBooksInStock);
