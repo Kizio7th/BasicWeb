@@ -106,7 +106,7 @@ public class Dashboard {
 
             Long firstNum = Long.parseLong(maxRevenue.substring(0, 1));
             firstNum += 1;
-            maxRevenue = firstNum.toString() + maxRevenue.substring(1);
+            maxRevenue = firstNum.toString() + String.join("", Collections.nCopies(maxRevenue.substring(1).length(), "0"));
             Map<Long, Long> revenuesConfig = new HashMap<>();
             for (int i = 0; i < 6; i++) {
                 revenuesConfig.put((long) i * 20, Long.parseLong(maxRevenue) / 5 * i);
