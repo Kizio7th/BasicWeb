@@ -8,7 +8,11 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,6 +61,7 @@ public class Dashboard {
             Float totalRevenueInMonth = (float) 0;
             Float totalRevenueInPreMonth = (float) 0;
             List<BookDto> bookDtos = new ArrayList<>();
+
             for (Book book : bookRepository.findAll()) {
                 BookDto bookDto = new BookDto();
                 bookDto.setTitle(book.getTitle());
@@ -66,10 +71,14 @@ public class Dashboard {
                 totalBooksInStock += book.getInStock();
                 views += book.getView();
             }
+            Float[] revenueDetail = new Float[24];
+            Arrays.fill(revenueDetail, 0.0f);
+            Map<Long, Float> revenueDetailMap = new HashMap<>();
             List<Bill> bills = billRepository.findAll();
             for (Bill bill : bills) {
                 LocalDateTime billDateTime = LocalDateTime.ofInstant(bill.getTime().toInstant(),
                         ZoneId.systemDefault());
+                int billDay = billDateTime.getDayOfMonth();
                 int billMonth = billDateTime.getMonthValue();
                 int billYear = billDateTime.getYear();
                 if (billMonth == currentMonth && billYear == currentYear) {
@@ -80,11 +89,36 @@ public class Dashboard {
                         totalTheBookSoldInMonth += 1;
                     }
                 }
+
                 if (billMonth == previousMonth && billYear == previousYear) {
                     totalRevenueInPreMonth += bill.getTotalPrice();
                 }
-
+                if (billDay >= 1 && billDay <= 15) {
+                    revenueDetail[billMonth * 2 - 2] += bill.getTotalPrice();
+                } else {
+                    revenueDetail[billMonth * 2 - 1] += bill.getTotalPrice();
+                }
             }
+            for (int i = 0; i < revenueDetail.length; i++) {
+                revenueDetailMap.put((long) i * 5, revenueDetail[i]);
+            }
+            Long maxRevenue = (long) Math.round(Collections.max(Arrays.asList(revenueDetail)));
+            int originalDigits = String.valueOf(maxRevenue).length();
+            Long roundedUp = (long) Math.pow(10, originalDigits);
+            Map<Long, Long> revenuesConfig = new HashMap<>();
+            for (int i = 0; i < 6; i++) {
+                revenuesConfig.put((long) i * 20, roundedUp / 5 * i);
+            }
+            // {
+            // {
+            // put(0L, 0L);
+            // put(20L, 2000L);
+            // put(40L, 4000L);
+            // put(60L, 6000L);
+            // put(80L, 8000L);
+            // put(100L, 10000L);
+            // }
+            // }
             ////// 4 first row card
             dashBoardDto.setTotalUser(userRepository.count() - 1);
             dashBoardDto.setTotalBooksInStock(totalBooksInStock);
@@ -104,8 +138,13 @@ public class Dashboard {
             dashBoardDto.setView(views);
             dashBoardDto.setTotalTheBookSoldInMonth(totalTheBookSoldInMonth);
 
+            ///// 3 newset orer
             dashBoardDto.setNewestOrders(orderService.getTop3NewestOrder());
             // dashBoardDto.setBills(null);
+
+            ///// line chart
+            dashBoardDto.setRevenuesDetail(revenueDetailMap);
+            dashBoardDto.setRevenues(revenuesConfig);
             return dashBoardDto;
         } catch (Exception e) {
             System.out.println(e);

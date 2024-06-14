@@ -1,6 +1,10 @@
 package com.example.demo.dto;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.example.demo.entity.Bill;
 
@@ -26,5 +30,6 @@ public class DashBoardDto {
     private Long totalTransactionKPI;
     private Float revenueGrowthRate;
     private List<OrderDto> newestOrders;
-    // private Long 
+    private Map<Long, Long> revenues = new HashMap<Long, Long>();
+    private Map<Long, Float> revenuesDetail;
 }
