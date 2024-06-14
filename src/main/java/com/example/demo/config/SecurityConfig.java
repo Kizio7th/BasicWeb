@@ -52,7 +52,7 @@ public class SecurityConfig {
                         logout -> logout
                                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                                 .permitAll());
-        http.rememberMe(me -> me.key("uniqueAndSecret").tokenValiditySeconds(30));
+        // http.rememberMe(me -> me.key("uniqueAndSecret").tokenValiditySeconds(30));
         return http.build();
     }
 
