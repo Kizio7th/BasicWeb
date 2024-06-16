@@ -106,7 +106,8 @@ public class Dashboard {
 
             Long firstNum = Long.parseLong(maxRevenue.substring(0, 1));
             firstNum += 1;
-            maxRevenue = firstNum.toString() + String.join("", Collections.nCopies(maxRevenue.substring(1).length(), "0"));
+            maxRevenue = firstNum.toString()
+                    + String.join("", Collections.nCopies(maxRevenue.substring(1).length(), "0"));
             Map<Long, Long> revenuesConfig = new HashMap<>();
             for (int i = 0; i < 6; i++) {
                 revenuesConfig.put((long) i * 20, Long.parseLong(maxRevenue) / 5 * i);
@@ -120,11 +121,11 @@ public class Dashboard {
 
             ////// Transaction Gauge
             dashBoardDto.setTotalTransactionInMonth(totalTransactionInMonth);
-            dashBoardDto.setTotalTransactionKPI((long) 100);
+            dashBoardDto.setTotalTransactionKPI((long) 50);
 
             ////// Revenue Gauge
             dashBoardDto.setTotalRevenueInMonth(totalRevenueInMonth);
-            dashBoardDto.setTotalRevenueKPI((float) 10000);
+            dashBoardDto.setTotalRevenueKPI((float) 2000);
 
             ////// Transfer Gauge
             dashBoardDto.setView(views);

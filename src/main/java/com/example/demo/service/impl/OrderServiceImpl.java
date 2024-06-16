@@ -89,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
 		orderDto.setQuantity(order.getQuantity());
 		orderDto.setTotalPrice(order.getTotalPrice());
 		orderDto.setImage(ImageUtil.decompressImage(order.getBook().getCover()));
-		orderDto.setTime(formatter.format(order.getBill().getTime()));
+		if(order.getBill() != null) orderDto.setTime(formatter.format(order.getBill().getTime()));
 		return orderDto;
 	}
 

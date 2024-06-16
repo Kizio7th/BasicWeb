@@ -16,6 +16,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>{
 	void deleteByOrderer(User orderer);
     List<Order> findByBill(Bill bill);
 
-	@Query("SELECT p FROM Order p ORDER BY p.id DESC LIMIT 3")
+	@Query("SELECT p FROM Order p WHERE status = true ORDER BY p.id DESC LIMIT 3")
 	List<Order> findTop3NewestOrder();
 }
